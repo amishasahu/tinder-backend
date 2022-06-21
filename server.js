@@ -49,11 +49,9 @@ import express from "express";
 import mongoose from "mongoose";
 import Cards from "./dbCards.js";
 import Cors from "cors";
-import serveless from "serverless-http"
 
 // App Config
 const app = express();
-const router = express.Router();
 const port = process.env.PORT || 8001; // port app gonna listen
 const connection_url = "mongodb+srv://admin:0tmKpW8UiN2VtLLj@cluster0.vtefr.mongodb.net/tinderdb?retryWrites=true&w=majority";
 // Middlewares
@@ -71,12 +69,12 @@ mongoose.connect(connection_url, {
 });
 // API Endpoints
 // ## go root url, callback func
-router.get("/", (req, res) => {
+app.get("/", (req, res) => {
   res.status(200).send("HELLO WORLD!!!");
 });
 
 // add data to db, endpoint /tinder/card
-router.post("/tinder/cards", (req, res) => {
+app.post("/tinder/cards", (req, res) => {
   console.log(req.body)
   const dbCard = req.body;
   Cards.create(dbCard, (err, data) => {
@@ -90,7 +88,7 @@ router.post("/tinder/cards", (req, res) => {
 
 // another endpoint (the same) which will download data from the db
 // with this will be retrieving every single thing from the collection DB that we just created
-router.get("/tinder/cards", (req, res) => {
+app.get("/tinder/cards", (req, res) => {
      Cards.find((err, data) => {
         if (err) {
           res.status(500).send(err);
@@ -100,9 +98,5 @@ router.get("/tinder/cards", (req, res) => {
       });
 });
 
-app.use(`/.netlify/functions/api`, router);
-
-// module.exports = app;
-// module.exports.handler = serverless(app);
 // Listener
-//app.listen(port, () => console.log(`listening on localhost: ${port}`));
+app.listen(port, () => console.log(`listening on localhost: ${port}`));
